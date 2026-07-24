@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import StageVisualizer3D from '../components/visualizer/StageVisualizer3D';
 import { API_URL } from '../lib/api';
 import { Sparkles, Zap, ArrowRight, ShieldCheck, Star, ShoppingCart, Calendar, Briefcase, X, CreditCard, CheckCircle } from 'lucide-react';
 
@@ -16,6 +15,46 @@ interface Product {
   image: string;
   brand: string;
   description: string;
+}
+
+function HeroProductionVisual() {
+  const highlights = [
+    {
+      label: 'Lighting',
+      image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=480&q=80',
+    },
+    {
+      label: 'Audio',
+      image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=480&q=80',
+    },
+    {
+      label: 'Stage',
+      image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=480&q=80',
+    },
+  ];
+
+  return (
+    <div className="relative h-full min-h-[360px] overflow-hidden rounded-[28px] border border-white/10 bg-[#11131a] shadow-2xl shadow-womb-cyan/10">
+      <img
+        src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=85"
+        alt="Concert stage lighting and crowd"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#07070c] via-[#07070c]/35 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+        <div className="grid grid-cols-3 gap-3">
+          {highlights.map((item) => (
+            <div key={item.label} className="overflow-hidden rounded-2xl border border-white/15 bg-black/45 backdrop-blur-md">
+              <img src={item.image} alt={`${item.label} equipment`} className="h-20 w-full object-cover" />
+              <div className="px-3 py-2 text-xs font-bold uppercase tracking-wide text-white">
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function HomePage() {
@@ -143,7 +182,7 @@ export default function HomePage() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-20">
         
-        {/* HERO SECTION WITH THREE.JS 3D VISUALIZER */}
+        {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4">
           
           <div className="lg:col-span-6 space-y-6">
@@ -199,9 +238,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* THREE.JS 3D STAGE VISUALIZER CANVA */}
           <div className="lg:col-span-6 h-[420px] relative">
-            <StageVisualizer3D />
+            <HeroProductionVisual />
           </div>
         </section>
 
