@@ -25,7 +25,7 @@ export default function Footer() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-white">Paystack Secured</h4>
+            <h4 className="text-sm font-semibold text-white">Payment Secured</h4>
             <p className="text-xs text-slate-400">Escrow & fast payout processing</p>
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="border-t border-white/5 py-6 px-4 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} WOMB Platform. All rights reserved. Powered by Paystack Payment Engine.
+        © {new Date().getFullYear()} WOMB Platform. All rights reserved. Payment secured for every checkout.
       </div>
     </footer>
   );

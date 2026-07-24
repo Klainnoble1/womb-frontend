@@ -130,7 +130,7 @@ export default function HomePage() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
 
-  const handlePaystackCheckout = async (e: React.FormEvent) => {
+  const handlePaymentCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!checkoutEmail || cart.length === 0) return;
 
@@ -160,7 +160,7 @@ export default function HomePage() {
         }, 1500);
       }
     } catch (error) {
-      alert('Paystack initialization simulated successfully!');
+      alert('Payment initialization simulated successfully!');
       setPaymentSuccess(true);
       setCart([]);
       setTimeout(() => {
@@ -232,8 +232,8 @@ export default function HomePage() {
                 <div className="text-xs text-slate-400">On-Time Concert Delivery</div>
               </div>
               <div>
-                <div className="text-2xl font-black text-womb-purple">Paystack</div>
-                <div className="text-xs text-slate-400">Secured Checkout</div>
+                <div className="text-2xl font-black text-womb-purple">Secure</div>
+                <div className="text-xs text-slate-400">Payment Secured</div>
               </div>
             </div>
           </div>
@@ -371,7 +371,7 @@ export default function HomePage() {
 
       </main>
 
-      {/* SHOPPING CART DRAWER WITH PAYSTACK INTEGRATION */}
+      {/* SHOPPING CART DRAWER WITH PAYMENT INTEGRATION */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm">
           <div className="w-full max-w-md bg-womb-dark border-l border-white/10 h-full p-6 flex flex-col justify-between overflow-y-auto">
@@ -427,7 +427,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Paystack Checkout Footer */}
+            {/* Payment Checkout Footer */}
             {cart.length > 0 && (
               <div className="pt-4 border-t border-white/10 space-y-4">
                 <div className="flex justify-between items-center text-sm font-bold text-white">
@@ -435,9 +435,9 @@ export default function HomePage() {
                   <span className="text-xl text-womb-cyan">₦{cartTotal.toLocaleString()}</span>
                 </div>
 
-                <form onSubmit={handlePaystackCheckout} className="space-y-3">
+                <form onSubmit={handlePaymentCheckout} className="space-y-3">
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Email address for Paystack Receipt</label>
+                    <label className="text-xs text-slate-400 block mb-1">Email address for payment receipt</label>
                     <input
                       type="email"
                       required
@@ -451,7 +451,7 @@ export default function HomePage() {
                   {paymentSuccess ? (
                     <div className="p-3 rounded-lg bg-womb-emerald/20 border border-womb-emerald text-womb-emerald text-xs font-bold flex items-center justify-center gap-2">
                       <CheckCircle className="w-4 h-4" />
-                      Redirecting to Paystack Payment Gateway...
+                      Redirecting to payment gateway...
                     </div>
                   ) : (
                     <button
@@ -460,13 +460,13 @@ export default function HomePage() {
                       className="w-full py-3 rounded-xl bg-gradient-to-r from-womb-cyan via-womb-magenta to-womb-purple text-womb-dark font-black text-xs uppercase tracking-wider shadow-lg shadow-womb-cyan/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                     >
                       <CreditCard className="w-4 h-4" />
-                      {isCheckingOut ? 'Initializing Paystack...' : 'Pay with Paystack'}
+                      {isCheckingOut ? 'Initializing payment...' : 'Pay securely'}
                     </button>
                   )}
 
                   <div className="text-[10px] text-slate-500 text-center flex items-center justify-center gap-1">
                     <ShieldCheck className="w-3 h-3 text-womb-cyan" />
-                    Secured by Paystack 256-bit Encryption
+                    Payment secured with encrypted checkout
                   </div>
                 </form>
               </div>
