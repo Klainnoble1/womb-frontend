@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import { API_URL } from '../../lib/api';
+import { clearSession, getSession, saveSession } from '../../lib/auth';
 import {
   Award,
   Boxes,
@@ -69,24 +70,21 @@ export default function VendorDashboardPage() {
   const [professionalForm, setProfessionalForm] = useState(initialProfessional);
 
   useEffect(() => {
-    const savedToken = window.localStorage.getItem('womb_vendor_token');
-    const savedUser = window.localStorage.getItem('womb_vendor_user');
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+    const saved = getSession();
+    if (saved && ['vendor', 'professional', 'admin'].includes(saved.user.role)) {
+      setToken(saved.token);
+      setUser(saved.user as VendorUser);
     }
   }, []);
 
-  const saveSession = (nextToken: string, nextUser: VendorUser) => {
-    window.localStorage.setItem('womb_vendor_token', nextToken);
-    window.localStorage.setItem('womb_vendor_user', JSON.stringify(nextUser));
+  const setVendorSession = (nextToken: string, nextUser: VendorUser) => {
+    saveSession(nextToken, nextUser);
     setToken(nextToken);
     setUser(nextUser);
   };
 
-  const clearSession = () => {
-    window.localStorage.removeItem('womb_vendor_token');
-    window.localStorage.removeItem('womb_vendor_user');
+  const clearVendorSession = () => {
+    clearSession();
     setToken('');
     setUser(null);
     setStatus('');
@@ -111,7 +109,7 @@ export default function VendorDashboardPage() {
       return;
     }
 
-    saveSession(data.token, data.user);
+    setVendorSession(data.token, data.user);
     setStatus(authMode === 'register' ? 'Vendor account created.' : 'Logged in.');
   };
 
@@ -197,7 +195,7 @@ export default function VendorDashboardPage() {
                 {user.name} - {user.role}
               </span>
               <button
-                onClick={clearSession}
+                onClick={clearVendorSession}
                 className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-slate-200 hover:bg-white/10"
                 aria-label="Log out"
                 title="Log out"

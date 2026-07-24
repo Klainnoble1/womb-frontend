@@ -67,6 +67,10 @@ export default function Navbar({ cartCount = 0, onOpenCart }: NavbarProps) {
               <User className="w-4 h-4 text-womb-amber" />
               Pros
             </Link>
+            <Link href="/dashboard" className="text-slate-300 hover:text-womb-emerald transition-colors flex items-center gap-1.5">
+              <User className="w-4 h-4 text-womb-emerald" />
+              Dashboard
+            </Link>
           </nav>
 
           {/* Right Action Icons */}
@@ -141,6 +145,13 @@ export default function Navbar({ cartCount = 0, onOpenCart }: NavbarProps) {
             className="block w-full text-center py-2.5 rounded-lg bg-gradient-to-r from-womb-cyan to-womb-purple text-womb-dark font-bold text-xs"
           >
             Vendor Portal
+          </Link>
+          <Link
+            href="/dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-center py-2.5 rounded-lg bg-white/10 text-white font-bold text-xs"
+          >
+            Customer Dashboard
           </Link>
         </div>
       )}
