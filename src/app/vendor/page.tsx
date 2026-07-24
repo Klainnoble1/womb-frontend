@@ -53,6 +53,22 @@ const initialProfessional = {
   avatar: '',
 };
 
+const PLATFORM_FEE_RATE = 0.15;
+
+function feeBreakdown(value: string) {
+  const vendorAmount = Number(value) || 0;
+  const customerAmount = Math.round(vendorAmount * (1 + PLATFORM_FEE_RATE));
+  return {
+    vendorAmount,
+    platformFee: customerAmount - vendorAmount,
+    customerAmount,
+  };
+}
+
+function formatNaira(amount: number) {
+  return `NGN ${amount.toLocaleString()}`;
+}
+
 export default function VendorDashboardPage() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [activeMode, setActiveMode] = useState<ListingMode>('product');
@@ -132,13 +148,14 @@ export default function VendorDashboardPage() {
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await postVendorResource('/api/products', {
+      const data = await postVendorResource('/api/products', {
         ...productForm,
         price: Number(productForm.price),
         stock: Number(productForm.stock),
       });
+      const pricing = data.pricing;
       setProductForm(initialProduct);
-      setStatus('Marketplace product published.');
+      setStatus(`Marketplace product published. Vendor amount ${formatNaira(pricing.vendor_amount)} + platform fee ${formatNaira(pricing.platform_fee)} = customer price ${formatNaira(pricing.customer_amount)}.`);
     } catch (error: any) {
       setStatus(error.message);
     }
@@ -147,12 +164,13 @@ export default function VendorDashboardPage() {
   const handleRentalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await postVendorResource('/api/rentals', {
+      const data = await postVendorResource('/api/rentals', {
         ...rentalForm,
         daily_rate: Number(rentalForm.daily_rate),
       });
+      const pricing = data.pricing;
       setRentalForm(initialRental);
-      setStatus('Rental listing published.');
+      setStatus(`Rental listing published. Vendor amount ${formatNaira(pricing.vendor_amount)} + platform fee ${formatNaira(pricing.platform_fee)} = customer daily rate ${formatNaira(pricing.customer_amount)}.`);
     } catch (error: any) {
       setStatus(error.message);
     }
@@ -161,12 +179,13 @@ export default function VendorDashboardPage() {
   const handleProfessionalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await postVendorResource('/api/professionals', {
+      const data = await postVendorResource('/api/professionals', {
         ...professionalForm,
         hourly_rate: Number(professionalForm.hourly_rate),
       });
+      const pricing = data.pricing;
       setProfessionalForm(initialProfessional);
-      setStatus('Professional profile published.');
+      setStatus(`Professional profile published. Vendor amount ${formatNaira(pricing.vendor_amount)} + platform fee ${formatNaira(pricing.platform_fee)} = customer hourly rate ${formatNaira(pricing.customer_amount)}.`);
     } catch (error: any) {
       setStatus(error.message);
     }
@@ -327,11 +346,16 @@ export default function VendorDashboardPage() {
               </div>
             )}
 
+            <div className="rounded-lg border border-womb-cyan/30 bg-womb-cyan/10 px-4 py-3 text-sm text-womb-cyan">
+              Vendor dashboard pricing: WOMB adds a 15% platform fee to uploaded sale prices, rental rates, professional rates, and project bids before customers see them.
+            </div>
+
             {activeMode === 'product' && (
               <VendorForm title="Publish Marketplace Equipment" icon={<PackagePlus className="w-5 h-5 text-womb-cyan" />} onSubmit={handleProductSubmit}>
                 <Field label="Item title" value={productForm.name} onChange={(value) => setProductForm({ ...productForm, name: value })} placeholder="BeamX 350W BWS Moving Head" />
                 <CategorySelect value={productForm.category} onChange={(value) => setProductForm({ ...productForm, category: value })} />
                 <Field label="Price (NGN)" type="number" value={productForm.price} onChange={(value) => setProductForm({ ...productForm, price: value })} placeholder="450000" />
+                <FeePreview label="Customer price" value={productForm.price} />
                 <Field label="Stock" type="number" value={productForm.stock} onChange={(value) => setProductForm({ ...productForm, stock: value })} placeholder="10" />
                 <Field label="Brand" value={productForm.brand} onChange={(value) => setProductForm({ ...productForm, brand: value })} placeholder="Chauvet Pro" />
                 <Field label="Image URL" type="url" value={productForm.image} onChange={(value) => setProductForm({ ...productForm, image: value })} placeholder="https://images.unsplash.com/..." />
@@ -344,6 +368,7 @@ export default function VendorDashboardPage() {
                 <Field label="Rental item" value={rentalForm.item_name} onChange={(value) => setRentalForm({ ...rentalForm, item_name: value })} placeholder="grandMA3 Light Console" />
                 <CategorySelect value={rentalForm.category} onChange={(value) => setRentalForm({ ...rentalForm, category: value })} />
                 <Field label="Daily rate (NGN)" type="number" value={rentalForm.daily_rate} onChange={(value) => setRentalForm({ ...rentalForm, daily_rate: value })} placeholder="150000" />
+                <FeePreview label="Customer daily rate" value={rentalForm.daily_rate} />
                 <Field label="Location" value={rentalForm.location} onChange={(value) => setRentalForm({ ...rentalForm, location: value })} placeholder="Lagos, Nigeria" />
                 <Field label="Image URL" type="url" value={rentalForm.image} onChange={(value) => setRentalForm({ ...rentalForm, image: value })} placeholder="https://images.unsplash.com/..." />
               </VendorForm>
@@ -354,6 +379,7 @@ export default function VendorDashboardPage() {
                 <Field label="Display name" value={professionalForm.name} onChange={(value) => setProfessionalForm({ ...professionalForm, name: value })} placeholder={user.name} />
                 <Field label="Specialty" value={professionalForm.role} onChange={(value) => setProfessionalForm({ ...professionalForm, role: value })} placeholder="FOH Sound Engineer" />
                 <Field label="Hourly rate (NGN)" type="number" value={professionalForm.hourly_rate} onChange={(value) => setProfessionalForm({ ...professionalForm, hourly_rate: value })} placeholder="40000" />
+                <FeePreview label="Customer hourly rate" value={professionalForm.hourly_rate} />
                 <Field label="Profile photo URL" type="url" value={professionalForm.avatar} onChange={(value) => setProfessionalForm({ ...professionalForm, avatar: value })} placeholder="https://images.unsplash.com/..." />
               </VendorForm>
             )}
@@ -410,6 +436,17 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
         className="w-full px-3.5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-womb-cyan"
       />
     </label>
+  );
+}
+
+function FeePreview({ label, value }: { label: string; value: string }) {
+  const pricing = feeBreakdown(value);
+
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-slate-300">
+      <div className="font-bold text-white">{label}: {formatNaira(pricing.customerAmount)}</div>
+      <div className="mt-1 text-slate-400">Vendor amount {formatNaira(pricing.vendorAmount)} + 15% platform fee {formatNaira(pricing.platformFee)}</div>
+    </div>
   );
 }
 

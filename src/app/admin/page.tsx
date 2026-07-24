@@ -29,12 +29,28 @@ type ProjectBid = {
   message: string;
   status: string;
   created_at: string;
+  pricing?: PlatformPricing;
+};
+
+type PlatformPricing = {
+  vendor_amount: number;
+  platform_fee_rate: number;
+  platform_fee: number;
+  customer_amount: number;
+};
+
+type ListingFee = {
+  id: number;
+  type: string;
+  title: string;
+  pricing: PlatformPricing;
 };
 
 export default function Admin() {
   const [session, setSession] = useState<Session | null>(null);
   const [projects, setProjects] = useState<AdminProject[]>([]);
   const [bids, setBids] = useState<ProjectBid[]>([]);
+  const [listingFees, setListingFees] = useState<ListingFee[]>([]);
   const [status, setStatus] = useState('');
   const [email, setEmail] = useState('admin@womb.local');
   const [password, setPassword] = useState('');
@@ -50,6 +66,7 @@ export default function Admin() {
     }
     setProjects(data.projects || []);
     setBids(data.bids || []);
+    setListingFees(data.listingFees || []);
     setStatus('');
   };
 
@@ -90,6 +107,7 @@ export default function Admin() {
     setSession(null);
     setProjects([]);
     setBids([]);
+    setListingFees([]);
     setPassword('');
     setStatus('');
   };
@@ -143,6 +161,29 @@ export default function Admin() {
               {projects.length} Projects / {bids.length} Bids
             </span>
 
+            <section className="glass-panel rounded-lg p-6 border border-white/10 space-y-4">
+              <div>
+                <h2 className="text-lg font-bold text-white">Platform Fee Review</h2>
+                <p className="text-xs text-slate-400">Admin-only view of the 15% platform fee added to vendor uploads.</p>
+              </div>
+              {listingFees.length === 0 ? (
+                <p className="text-xs text-slate-500">No vendor listing fees to review yet.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                  {listingFees.slice(0, 9).map((item) => (
+                    <div key={`${item.type}-${item.id}`} className="rounded-lg bg-white/5 border border-white/10 p-4 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-[10px] uppercase tracking-wider text-womb-amber">{item.type}</span>
+                        <span className="text-[10px] text-slate-400">15%</span>
+                      </div>
+                      <div className="text-sm font-bold text-white line-clamp-1">{item.title}</div>
+                      <FeeLine pricing={item.pricing} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
             <div className="grid grid-cols-1 gap-5">
               {projects.map((project) => (
                 <section key={project.id} className="glass-panel rounded-lg p-6 border border-white/10 space-y-5">
@@ -186,6 +227,7 @@ export default function Admin() {
                               <span className="text-sm font-black text-womb-cyan">NGN {bid.amount.toLocaleString()}</span>
                               <span className="text-[10px] uppercase tracking-wider text-womb-amber">{bid.status}</span>
                             </div>
+                            {bid.pricing && <FeeLine pricing={bid.pricing} />}
                             <p className="text-xs text-slate-300 leading-relaxed">{bid.message}</p>
                             <p className="text-[11px] text-slate-500">{bid.vendor_email}</p>
                           </div>
@@ -202,6 +244,16 @@ export default function Admin() {
         {status && <div className="rounded-lg border border-womb-amber/30 bg-womb-amber/10 px-4 py-3 text-sm text-womb-amber">{status}</div>}
       </main>
       <Footer />
+    </div>
+  );
+}
+
+function FeeLine({ pricing }: { pricing: PlatformPricing }) {
+  return (
+    <div className="rounded-md bg-black/20 border border-white/10 p-3 text-[11px] text-slate-400">
+      <div>Vendor amount: NGN {pricing.vendor_amount.toLocaleString()}</div>
+      <div>Platform fee: NGN {pricing.platform_fee.toLocaleString()}</div>
+      <div className="font-bold text-womb-cyan">Customer amount: NGN {pricing.customer_amount.toLocaleString()}</div>
     </div>
   );
 }
