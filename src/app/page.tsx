@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import StageVisualizer3D from '../components/visualizer/StageVisualizer3D';
+import { API_URL } from '../lib/api';
 import { Sparkles, Zap, ArrowRight, ShieldCheck, Star, ShoppingCart, Calendar, Briefcase, X, CreditCard, CheckCircle } from 'lucide-react';
 
 interface Product {
@@ -67,7 +68,7 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/products')
+    fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products && data.products.length > 0) {
@@ -97,7 +98,7 @@ export default function HomePage() {
     setIsCheckingOut(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/payments/initialize', {
+      const response = await fetch(`${API_URL}/api/payments/initialize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

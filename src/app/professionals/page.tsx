@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
+import { API_URL } from '../../lib/api';
 import { UserCheck, Star, Award, CheckCircle } from 'lucide-react';
 
 interface Professional {
@@ -40,7 +41,7 @@ export default function ProfessionalsPage() {
   ];
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/professionals')
+    fetch(`${API_URL}/api/professionals`)
       .then((res) => res.json())
       .then((data) => {
         if (data.professionals && data.professionals.length > 0) {

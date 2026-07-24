@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
+import { API_URL } from '../../lib/api';
 import { Filter, Search, ShoppingCart, Star, Sparkles, Check } from 'lucide-react';
 
 interface Product {
@@ -62,7 +63,7 @@ export default function MarketplacePage() {
   ];
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/products')
+    fetch(`${API_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products && data.products.length > 0) {

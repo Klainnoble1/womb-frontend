@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
+import { API_URL } from '../../lib/api';
 import { Calendar, MapPin, CheckCircle, ShieldCheck } from 'lucide-react';
 
 interface Rental {
@@ -40,7 +41,7 @@ export default function RentalsPage() {
   ];
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/rentals')
+    fetch(`${API_URL}/api/rentals`)
       .then((res) => res.json())
       .then((data) => {
         if (data.rentals && data.rentals.length > 0) {
