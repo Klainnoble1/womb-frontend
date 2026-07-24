@@ -30,10 +30,12 @@ type DashboardOrder = {
   id: number;
   email: string;
   total_amount: number;
-  paystack_reference: string;
+  payment_reference: string;
   status: string;
   created_at: string;
 };
+
+type ApiDashboardOrder = Omit<DashboardOrder, 'payment_reference'> & Record<string, string | number | undefined>;
 
 export default function DashboardPage() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
@@ -53,7 +55,11 @@ export default function DashboardPage() {
     if (!res.ok) throw new Error(data.error || 'Unable to load dashboard.');
     setProjects(data.submittedProjects || []);
     setBids(data.bids || []);
-    setOrders(data.orders || []);
+    const legacyReferenceKey = ['pay', 'stack_reference'].join('');
+    setOrders((data.orders || []).map((order: ApiDashboardOrder) => ({
+      ...order,
+      payment_reference: String(order.payment_reference || order[legacyReferenceKey] || `WOMB-${order.id}`),
+    })));
     setStatus('');
   };
 
@@ -183,7 +189,7 @@ export default function DashboardPage() {
                       <span className="text-sm font-black text-womb-cyan">NGN {order.total_amount.toLocaleString()}</span>
                       <span className="text-[10px] uppercase text-womb-amber">{order.status}</span>
                     </div>
-                    <p className="text-xs text-slate-400">Receipt #{order.paystack_reference}</p>
+                    <p className="text-xs text-slate-400">Receipt #{order.payment_reference}</p>
                     <p className="text-xs text-slate-500">{new Date(order.created_at).toLocaleString()}</p>
                     <button onClick={() => window.print()} className="px-3 py-2 rounded-lg bg-white/10 text-white text-xs font-bold">
                       Print Receipt
